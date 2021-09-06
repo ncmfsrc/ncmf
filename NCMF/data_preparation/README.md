@@ -51,3 +51,11 @@ polypharmacy_matrix_formation.py -- This notebook was used to create csv files f
 4. This creates the samples as needed by NCMF (no scaling is done)
 
 5. To scale the MIMIC dataset, execute the notebook MIMIC_scaling.ipynb after updating the sample number
+
+NOTE: To obtain the processed dataset files, *dict_nsides_mimic_data_v<sample_number>_case1_part.pkl*, from the original MIMIC and NSIDES databases, use *NSIDES_MIMIC_data_gen.py*. Download the dependent data files "pubmed_datagen_dependent_data_files.tar.gz" and untar in the data_preparation directory before executing *NSIDES_MIMIC_data_gen.py*. Download link: https://drive.google.com/file/d/1iWl_ltXN88AVembQ_pIcWpfuS9K2Cd1g/view?usp=sharing
+
+#### PubMed dataset:
+1. Please place the complete orignal PubMed dataset at the path ../../datasets/NCMF/PubMed.
+
+2. Launch the Jupyter notebook PubMed_sample_data_generation.ipynb and update the sample_id, path to the dataset and execute the entire notebook.
+
