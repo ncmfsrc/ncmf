@@ -11,7 +11,7 @@ emb_file <- 'cmf_s3_emb_pubmed.dat' # TODO
 # object sets of varying sizes.
 print('Loading Data...')
 X <- list()
-D <- c(2665, 4454, 5877, 619) # TODO dimensions
+D <- c(2675, 4478, 5766, 622) # TODO dimensions
 inds <- matrix(0, nrow=10, ncol=2) # entity
 inds[1,] <- c(1, 1)
 inds[2,] <- c(1, 2)

@@ -14,7 +14,7 @@ make
 threads=4 # number of threads for training
 size=50 # embedding dimension
 negative=5 # number of negative samples
-alpha=0.008 # initial learning rate
-sample=500 # number of training samples (Million)
+alpha=0.030 # initial learning rate
+sample=400 # number of training samples (Million)
 
 ./bin/pte -nodes ${node_file} -words ${node_file} -hin ${link_file} -type ${type_file} -output ${emb_file} -binary 0 -size ${size} -negative ${negative} -samples ${sample} -alpha ${alpha} -threads ${threads}

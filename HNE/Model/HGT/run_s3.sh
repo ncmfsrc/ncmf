@@ -11,13 +11,13 @@ emb_file="${folder}emb.dat"
 
 size=50
 nhead=5
-nlayer=3
+nlayer=4
 dropout=0.2
 sample_depth=6
 sample_width=128
 
 nepoch=100
-npool=4
+npool=8
 nbatch=32
 repeat=2
 batch_size=512
