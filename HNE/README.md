@@ -10,7 +10,7 @@ In the steps below, the values of the placeholders can take one of the following
 Once the data is available at the path ../datasets/HNE/, ensure the following path has the necessary data for MIMIC, Polypharmacy and PubMed, as shown below:
 
 ```
-(base) user@server:~/<path to code repo>/ncmf/source/HNE$ ll ./Data/
+(base) user@server:~/<path to code repo>/HNE$ ll ./Data/
 total 20
 drwxrwxr-x 5 user user 4096 Sep  1 14:51 ./
 drwxrwxr-x 6 user user 4096 Sep  1 14:51 ../
