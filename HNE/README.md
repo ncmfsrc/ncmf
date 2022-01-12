@@ -3,7 +3,7 @@
 In the steps below, the values of the placeholders can take one of the following values:
 <dataset> can be {"Polypharmacy", "PubMed", "MIMIC"}
 <sample_no> can be {1, 2, 3} for Polypharmacy and PubMed and {1, 3, 4} for MIMIC
-<algorithm> can be {"AspEm", "ConvE", "DistMult", "HGT", "HIN2Vec", "metapath2vec-ESim", "PTE", "R-GCN", "TransE"}
+<algorithm> can be {"AspEm", "ConvE", "DistMult", "HGT", "HIN2Vec", "metapath2vec-ESim", "PTE", "R-GCN", "TransE", "ComplEx"}
 
 #### Dataset
 

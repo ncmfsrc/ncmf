@@ -415,3 +415,44 @@ def conve_convert(dataset):
     new_link_file.close()         
     
     return
+
+def complex_convert(dataset):
+
+    ori_data_folder = f'{data_folder}/{dataset}'
+    model_data_folder = f'{model_folder}/ComplEx/data/{dataset}'
+
+    entity_count, relation_count, triplet_count = 0, 0, 0
+    with open(f'{ori_data_folder}/{meta_file}','r') as original_meta_file:
+        for line in original_meta_file:
+            entity, info, _, count = line[:-1].split(' ')
+            info = info[:-1].split('_')
+            if entity=='Node' and info[0]=='Total': entity_count = int(count)
+            elif entity=='Edge' and info[0]=='Total': triplet_count = int(count)
+            elif entity=='Edge' and info[0]=='Type': relation_count += 1
+
+    print(f'ComplEx: converting {dataset}\'s node file!')
+    new_node_file = open(f'{model_data_folder}/{node_file}','w')
+    new_node_file.write(f'{entity_count}\n')
+    with open(f'{ori_data_folder}/{node_file}','r') as original_node_file:
+        for line in original_node_file:
+            line = line[:-1].split('\t')
+            new_node_file.write(f'{line[0]}\t{line[0]}\n')
+    new_node_file.close()
+
+    print(f'ComplEx: writing {dataset}\'s relation file!')
+    with open(f'{model_data_folder}/rela.dat','w') as new_rela_file:
+        new_rela_file.write(f'{relation_count}\n')
+        for each in range(relation_count):
+            new_rela_file.write(f'{each}\t{each}\n')
+
+    print(f'ComplEx: converting {dataset}\'s link file!')
+    new_link_file = open(f'{model_data_folder}/{link_file}','w')
+    new_link_file.write(f'{triplet_count}\n')
+    with open(f'{ori_data_folder}/{link_file}','r') as original_link_file:
+        for line in original_link_file:
+            left, right, ltype, weight = line[:-1].split('\t')
+            new_link_file.write(f'{left} {right} {ltype}\n')
+    new_link_file.close()
+
+    return
+

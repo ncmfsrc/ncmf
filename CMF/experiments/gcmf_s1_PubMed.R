@@ -3,6 +3,7 @@ require("dplyr")
 require("tidyr")
 require("reticulate")
 
+start_time = Sys.time()
 #data_folder <- '../HNE/Data/PubMed/CMF/' # TODO
 data_folder <- '../../datasets/CMF/PubMed/sampled1/'
 test_link_file <- 'sampled1_link.dat.test' # TODO
@@ -88,6 +89,9 @@ embs_sorted <- embs_sorted %>% unite('emb', V1:V50, sep=' ', remove=TRUE)
 write.table(paste0(''), emb_file, row.names=FALSE, col.names=FALSE, quote=FALSE)
 write.table(embs_sorted, emb_file, sep="\t", row.names=FALSE, col.names=FALSE, append=TRUE, quote=FALSE)
 
+end_time = Sys.time()
+print('Runtime in seconds...')
+print(end_time - start_time)
 # print('Results...')
 # # Check the predictions
 # # Note that the data created here has no low-rank structure,

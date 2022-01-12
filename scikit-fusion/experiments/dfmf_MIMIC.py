@@ -5,6 +5,7 @@ import sys
 sys.path.append("..")
 from skfusion import fusion
 import argparse
+from datetime import datetime
 
 def parse_args():
     parser = argparse.ArgumentParser(description='DFMF')
@@ -79,4 +80,10 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time = datetime.now()
     main()
+    end_time = datetime.now()
+    runtime = end_time - start_time
+    runtime_seconds = runtime.total_seconds()
+    print(f"Total runtime = {runtime_seconds}")
+

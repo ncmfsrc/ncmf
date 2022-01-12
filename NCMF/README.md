@@ -98,7 +98,19 @@ The folder ./experiments has the following files to reproduce the NCMF represent
 5. To average over all 3 samples, navigate to src/ and run the command
 `python averaging_results.py MIMIC NCMF`
 
-#### Polypharmacy dataset
+#### Polypharmacy dataset - PolyP1
+
+1. Ensure the data files are available at the path ../datasets/NCMF/ESP/. Ensure the folder 1 exists in this path - embeddings will be saved here.
+
+2. To run DCA on the drug x drug side-effect matrix, follow the README at data_preparation/dca path, after preparing the original data using the notebook data_preparation_NCMF_esp_pseudo_polypharmacy.ipynb.
+
+3. After DCA execution, to run NCMF on the drug x latent matrix, drug x protein and protein x protein matrices, use data_preparation/data_prep_ESP.ipynb to get the files needed for NCMF.
+
+4. Execute the notebook experiments/ncmf_esp.ipynb to get drug and protein representations.
+
+5. To evaluate the representations learnt, run the notebook ESP_evaluation.ipynb
+
+#### Polypharmacy dataset - PolyP2
 
 1. Ensure the data files are available at the path ../datasets/NCMF/Polypharmacy/. Ensure the folders 1, 2 and 3 exist in this path - the embeddings will be saved here.
 

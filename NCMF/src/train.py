@@ -11,7 +11,7 @@ from src.data_utils import *
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
 
-def train_and_validate(net, trainloaders, validloaders, embloaders, norm_params, hyperparams, device, writer):
+def train_and_validate(net, trainloaders, validloaders, embloaders, norm_params, hyperparams, device, writer, matrix_types):
     """Trains and validates the given network."""
     optimizer = optim.AdamW(net.parameters(
     ), lr=hyperparams['learning_rate'], weight_decay=hyperparams['weight_decay'], eps=1e-10, amsgrad=False)
@@ -20,8 +20,8 @@ def train_and_validate(net, trainloaders, validloaders, embloaders, norm_params,
     T_0 = hyperparams['num_epochs'] // hyperparams['num_cycles']
     scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer, T_0=T_0, T_mult=1)
-    train_loss_func = make_train_loss_function()
-    valid_loss_func = make_valid_loss_function()
+    train_loss_func = [make_train_loss_function_ZINB(),make_train_loss_function_ZINORM()]
+    valid_loss_func = [make_valid_loss_function_ZINB(),make_valid_loss_function_ZINORM()]
     scaler = amp.GradScaler()
 
     train_losses, valid_losses = [], []
@@ -45,7 +45,8 @@ def train_and_validate(net, trainloaders, validloaders, embloaders, norm_params,
             norm_params,
             hyperparams,
             beta,
-            device
+            device,
+            matrix_types
         )
         train_losses.append(train_loss)
 
@@ -64,7 +65,8 @@ def train_and_validate(net, trainloaders, validloaders, embloaders, norm_params,
                 entity_embedding,
                 norm_params,
                 hyperparams,
-                device
+                device,
+                matrix_types
             )
             valid_losses.append(valid_loss)
 
@@ -108,7 +110,7 @@ def train_and_validate(net, trainloaders, validloaders, embloaders, norm_params,
     return net, losses
 
 
-def train_step(net, optimizer, scheduler, scaler, loss_func, trainloaders, norm_params, hyperparams, beta, device):
+def train_step(net, optimizer, scheduler, scaler, loss_func, trainloaders, norm_params, hyperparams, beta, device, matrix_types):
     """Trains the network on the training set for a single epoch."""
     rmse_loss_func = RMSELoss(reduction='mean')
 
@@ -116,6 +118,13 @@ def train_step(net, optimizer, scheduler, scaler, loss_func, trainloaders, norm_
     for xid, trainloader in trainloaders.items():
         row_ids, row_loaders = trainloader[0]
         col_ids, col_loaders = trainloader[1]
+        # check if input is real/binary - add condition for this. right now adapted for NUHS
+        if xid in matrix_types["real"]: # ZINORM
+            #print("ZINORM")
+            updated_loss_func = loss_func[1]
+        elif xid in matrix_types["binary"]: # ZINB
+            #print("ZINB")
+            updated_loss_func = loss_func[0]
 
         for row_idx, mat_batches in enumerate(zip(*row_loaders)):
             Xs = [mat[0].to(device) for mat in mat_batches]
@@ -140,7 +149,7 @@ def train_step(net, optimizer, scheduler, scaler, loss_func, trainloaders, norm_
                     XP_block = {k: b.view(X_block.shape)
                                 for k, b in XP_block.items()}
 
-                    row_loss, col_loss, rec_loss = loss_func(
+                    row_loss, col_loss, rec_loss = updated_loss_func(
                         row_entities, col_entities, XP_block,
                         Xs, XTs, X_block,
                         torch.tensor(hyperparams['lamda']),
@@ -172,20 +181,26 @@ def train_step(net, optimizer, scheduler, scaler, loss_func, trainloaders, norm_
     return total_loss, total_rmse
 
 
-def valid_step(net, loss_func, dataloaders, entity_embedding, norm_params, hyperparams, device):
+def valid_step(net, loss_func, dataloaders, entity_embedding, norm_params, hyperparams, device, matrix_types):
     """Validates the network with an unseen validation set for a single epoch."""
     rmse_loss_func = RMSELoss(reduction='mean')
 
     total_loss, total_rmse = 0., 0.
     for xid, dataloader in dataloaders.items():
         row_eid, col_eid = net.meta[xid]
+        if xid in matrix_types["real"]: # ZINORM
+            print("ZINORM")
+            updated_loss_func = loss_func[1]
+        elif xid in matrix_types["binary"]: # ZINB
+            print("ZINB")
+            updated_loss_func = loss_func[0]
         for i, (row, col, val) in enumerate(dataloader):
             row_emb = entity_embedding[row_eid][row].to(device)
             col_emb = entity_embedding[col_eid][col].to(device)
             X_block = val.view((-1, 1)).to(device)
             with amp.autocast():
                 XP_block = net.rec_forward(xid, row_emb, col_emb)
-                zinb_loss = loss_func(
+                zinb_loss = updated_loss_func(
                     XP_block['M_bar'], XP_block['Theta'], XP_block['Pi'], X_block, hyperparams['lamda'], mask=None)
                 rmse_loss = rmse_loss_func(XP_block['M_bar'], X_block, None)
 

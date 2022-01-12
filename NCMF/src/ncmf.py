@@ -22,7 +22,7 @@ warnings.filterwarnings("ignore", category=ConvergenceWarning)
 warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 
 class ncmf():
-    def __init__(self, sample_no, dataset_name, num_epochs = 1000, learning_rate = 1e-6, weight_decay = 1e-4, convergence_threshold = -1e-3, train_batch_size = 2048, valid_batch_size = 2048, entity_matrices = ['X0', 'X1', 'X2'], pretrain = False, max_norm = 1, lamda = 1e-3, anneal = 'cosine', num_cycles = 10, proportion = 0.8, ntrain_neg = 5, nvalid_neg = 5, autoencoder_k = 50, autoencoder_k_factor = 0, autoencoder_hidden_dim = 1024, autoencoder_act_f = 'tanh', fusion_act_f = 'tanh', reconstructor_act_f = 'tanh'):
+    def __init__(self, sample_no, data_folder, dataset_name, matrix_types, num_epochs = 1000, learning_rate = 1e-6, weight_decay = 1e-4, convergence_threshold = -1e-3, train_batch_size = 2048, valid_batch_size = 2048, entity_matrices = ['X0', 'X1', 'X2'], pretrain = False, max_norm = 1, lamda = 1e-3, anneal = 'cosine', num_cycles = 10, proportion = 0.8, ntrain_neg = 5, nvalid_neg = 5, autoencoder_k = 50, autoencoder_k_factor = 0, autoencoder_hidden_dim = 1024, autoencoder_act_f = 'tanh', fusion_act_f = 'tanh', reconstructor_act_f = 'tanh'):
         self.node_file = f'sampled{sample_no}_node.dat'
         self.link_file = f'sampled{sample_no}_link.dat'
         self.link_test_file = f'sampled{sample_no}_link.dat.test'
@@ -34,7 +34,9 @@ class ncmf():
         self.sample_no = sample_no
         self.seed = 0
         self.cuda_id = 0
-        self.data_folder = '../../datasets/NCMF/'
+        #self.data_folder = '../../datasets/NCMF/'
+        self.data_folder = data_folder
+        self.matrix_types = matrix_types
         self.dataset = f'{dataset_name}'
         self.i = 0
         self.runs_folder = './runs/'
@@ -80,7 +82,7 @@ class ncmf():
         trainloaders, validloaders, embloaders = load_dataloaders(graph, meta, train_matrices, train_masks, valid_cells, self.hyperparams['train_batch_size'], self.hyperparams['valid_batch_size'], emb_matrix_ids=self.entity_matrices)
         device = f'cuda:{self.cuda_id}' if torch.cuda.is_available() else 'cpu'
         net = DCMF( graph, meta, entity_dims, self.autoencoder_config, self.reconstructor_config, self.fusion_config).to(device)
-        net, losses = train_and_validate( net, trainloaders, validloaders, embloaders, norm_params, self.hyperparams, device, self.writer)
+        net, losses = train_and_validate( net, trainloaders, validloaders, embloaders, norm_params, self.hyperparams, device, self.writer, self.matrix_types)
         entity_embedding = retrieve_embedding( net, embloaders, norm_params, device)
         save_embedding(node_idx_df, entity_embedding, file_path=os.path.join(self.data_folder, self.dataset, self.emb_file))
         # reconstructing matrices
@@ -104,7 +106,7 @@ class ncmf():
 
     def cross_validation(self, edge_embs, edge_labels):
     
-        auc, mrr, recall, precision, f1 = [], [], [], [], []
+        auc, mrr, recall, precision, f1, predictions, actual = [], [], [], [], [], [], []
         seed_nodes, num_nodes = np.array(list(edge_embs.keys())), len(edge_embs)
         skf = KFold(n_splits=5, shuffle=True, random_state=seed)
         for fold, (train_idx, test_idx) in enumerate(skf.split(np.zeros((num_nodes,1)), np.zeros(num_nodes))):
@@ -125,8 +127,10 @@ class ncmf():
             clf = LinearSVC(random_state=seed, max_iter=max_iter)
             clf.fit(train_edge_embs, train_edge_labels)
             preds = clf.predict(test_edge_embs)
+            predictions.extend(preds)
+            actual.extend(test_edge_labels)
             auc.append(roc_auc_score(test_edge_labels, preds))
-    
+             
             # Adding precision, recall, f1 score
             recall.append(recall_score(test_edge_labels, preds))
             precision.append(precision_score(test_edge_labels, preds))
@@ -146,7 +150,7 @@ class ncmf():
             mrr.append(np.mean(curr_mrr))
             assert conf_num==len(confidence)
 
-        return np.mean(auc), np.mean(mrr), np.mean(recall), np.mean(precision), np.mean(f1)
+        return np.mean(auc), np.mean(mrr), np.mean(recall), np.mean(precision), np.mean(f1), predictions, actual
 
     def record(self, record_file_path, train_para, scores, model, attributed, supervised):
         scores_str = dict_to_str(scores)
@@ -159,6 +163,10 @@ class ncmf():
         with open(f'{self.data_folder}/out/{self.dataset}_sample{self.sample_no}_NCMF_results.csv', 'w') as outfile:
             outfile.write("AUC,MRR\n")
             outfile.write(f'{scores["lp/AUC"]:.4f},{scores["lp/MRR"]:.4f}\n')
+        with open(f'{self.data_folder}/out/{self.dataset}_sample{self.sample_no}_NCMF_preds.csv', 'w') as outfile:
+            outfile.write("preds,actual\n")
+            for i in range(len(scores["lp/predictions"])):
+                outfile.write(f'{scores["lp/predictions"][i]},{scores["lp/actual"][i]}\n')
         return
 
     def lp_evaluate(self, test_file_path, emb_dict):
@@ -185,8 +193,8 @@ class ncmf():
             edge_embs[node] = np.array(edge_embs[node])
             edge_labels[node] = np.array(edge_labels[node])
         print("Just before cross val") 
-        auc, mrr, recall, precision, f1 = self.cross_validation(edge_embs, edge_labels)
-        return auc, mrr, recall, precision, f1
+        auc, mrr, recall, precision, f1, predictions, actual = self.cross_validation(edge_embs, edge_labels)
+        return auc, mrr, recall, precision, f1, predictions, actual
 
     def evaluate(self):
         model = 'DataFusion'
@@ -198,7 +206,7 @@ class ncmf():
         nc_scores, lp_scores = {}, {}
         link_test_path = f'{self.data_folder}/{self.dataset}/{self.link_test_file}'
         print("Start eval")
-        lp_scores['AUC'], lp_scores['MRR'], lp_scores['recall'], lp_scores['precision'], lp_scores['f1'] = self.lp_evaluate(link_test_path, emb_dict)
+        lp_scores['AUC'], lp_scores['MRR'], lp_scores['recall'], lp_scores['precision'], lp_scores['f1'], lp_scores['predictions'], lp_scores['actual'] = self.lp_evaluate(link_test_path, emb_dict)
 
         consolidated_scores = consolidate_dict(nc=nc_scores, lp=lp_scores)
 

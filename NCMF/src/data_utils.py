@@ -423,20 +423,23 @@ def train_valid_split(node_df, link_df, test_link_df, link_info_df, ntrain_neg=5
     # train: 0 (negative link), 1 (positive link)
     # valid: 2 (negative link), 3 (positive link)
     # test: 4 (negative link), 5 (positive link)
-    full_links = np.zeros((node_df.shape[0], node_df.shape[0]))
+    full_links = np.zeros((node_df.shape[0], node_df.shape[0]), dtype=np.int8)
 
     # include test links
     test_link_ones_rows = test_link_df[test_link_df['link_status'] == 1][[
         'node_id_from']].values
+    print(len(test_link_ones_rows))
     test_link_ones_cols = test_link_df[test_link_df['link_status'] == 1][[
         'node_id_to']].values
-    full_links[test_link_ones_rows, test_link_ones_cols] = 5
+    if len(test_link_ones_rows)>0 and len(test_link_ones_cols)>0:
+        full_links[test_link_ones_rows, test_link_ones_cols] = 5
 
     test_link_zeros_rows = test_link_df[test_link_df['link_status'] == 0][[
         'node_id_from']].values
     test_link_zeros_cols = test_link_df[test_link_df['link_status'] == 0][[
         'node_id_to']].values
-    full_links[test_link_zeros_rows, test_link_zeros_cols] = 4
+    if len(test_link_zeros_rows)>0 and len(test_link_zeros_cols)>0:
+        full_links[test_link_zeros_rows, test_link_zeros_cols] = 4
 
     # split positive links
     train_link_ones_df, valid_link_ones_df = train_test_split(

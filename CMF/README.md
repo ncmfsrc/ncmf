@@ -6,11 +6,11 @@ In the steps below, the values of the placeholders can take one of the following
 <algorithm> can be "OTHER"
 
 1. Create and initialise anaconda environment for CMF/gCMF.
-    - `wget https://drive.google.com/file/d/1gLi83-MwOV7VTY6c6Xv-JP486QD2QXzO/view?usp=sharing`
-    - `tar -xvzf CMF_env.tar.gz`
-    - `conda activate ./env`
+    - `conda env create -f environment.yml`
+    - `conda activate r_env`
 
-2. Train model for specific PubMed sample i, where i={1,2,3} for Polypharmacy and PubMed, i={1,3,4} for MIMIC. To train cmf/gcmf for sample 1 run the following respectively.
+2. Train model for specific PubMed sample i, where i={1,2,3} for Polypharmacy and PubMed, i={1,3,4} for MIMIC. To train cmf/gcmf for sample 1 run the following respectively, from the experiments folder.
+    - `cd  experiments`
     - `Rscript cmf_s1_<dataset>.R` 
     - `Rscript gcmf_s1_<dataset>.R` 
 

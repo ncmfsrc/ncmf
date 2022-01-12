@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument('-dataset', required=True, type=str, help='Targeting dataset.', 
                         choices=['Mashup','DBLP','Freebase','PubMed','Yelp', 'Polypharmacy', 'MIMIC'])
     parser.add_argument('-model', required=True, type=str, help='Targeting model.', 
-                        choices=['metapath2vec-ESim','PTE','HIN2Vec','AspEm','HEER','R-GCN','HAN','HGT','TransE','DistMult', 'ConvE', 'OTHER'])
+                        choices=['metapath2vec-ESim','PTE','HIN2Vec','AspEm','HEER','R-GCN','HAN','HGT','TransE','DistMult', 'ConvE', 'ComplEx', 'OTHER'])
     parser.add_argument('-task', required=True, type=str, help='Targeting task.',
                         choices=['nc', 'lp', 'both'])    
     parser.add_argument('-attributed', required=True, type=str, help='Only R-GCN, HAN, and HGT support attributed training.',

@@ -8,7 +8,7 @@ def parse_args():
     parser.add_argument('-dataset', required=True, type=str, help='Targeting dataset.', 
                         choices=['DBLP','Freebase','PubMed','Yelp', 'Mashup', 'Polypharmacy', 'MIMIC'])
     parser.add_argument('-model', required=True, type=str, help='Targeting model.', 
-                        choices=['metapath2vec-ESim','PTE','HIN2Vec','AspEm','HEER','R-GCN','HAN','HGT','TransE','DistMult', 'ConvE'])
+                        choices=['metapath2vec-ESim','PTE','HIN2Vec','AspEm','HEER','R-GCN','HAN','HGT','TransE','DistMult', 'ConvE', 'ComplEx'])
     parser.add_argument('-attributed', required=True, type=str, help='Only R-GCN, HAN, and HGT support attributed training.',
                         choices=['True','False'])
     parser.add_argument('-supervised', required=True, type=str, help='Only R-GCN, HAN, and HGT support semi-supervised training.', 
@@ -60,7 +60,8 @@ def main():
     elif args.model=='HGT': hgt_convert(args.dataset, args.attributed, args.supervised)
     elif args.model=='TransE': transe_convert(args.dataset)
     elif args.model=='DistMult': distmult_convert(args.dataset)
-    elif args.model=='ConvE': conve_convert(args.dataset)    
+    elif args.model=='ConvE': conve_convert(args.dataset)   
+    elif args.model=='ComplEx': complex_convert(args.dataset)
         
     print('Data transformation finished!')
     

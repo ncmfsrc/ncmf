@@ -9,7 +9,7 @@ In the steps below, the values of the placeholders can take one of the following
     - `conda env create -f environment.yml`
     - `conda activate dcmf_env`
 
-2. Prepare data matrices for specific dataset sample i, where i={1,2,3} for Polypharmacy and PubMed, i={1,3,4} for MIMIC. Launch the notebook at ./doc/<dataset>_data_prep_DCMF.ipynb and update the sample id. Run the complete notebook.
+2. Prepare data matrices for specific dataset sample i, where i={1,2,3} for Polypharmacy and PubMed, i={1,3,4} for MIMIC. Launch the notebook at ./experiments/<dataset>_data_prep_DCMF.ipynb and update the sample id. Run the complete notebook.
 
 3. Train DCMF by launching the notebook at ./doc/dcmf_<dataset>.ipynb and execute the entire notebook.
 
