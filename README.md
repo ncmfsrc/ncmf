@@ -1,8 +1,8 @@
-# Neural Collective Matrix Factorization for Link Prediction in Heterogeneous Biomedical Data
+# Neural Collective Matrix Factorization for Integrated Analysis of Heterogeneous Biomedical Data
 
-Source code and data to reproduce results in **Table 2. Performance Comparison of NCMF with CMF-based methods and Heterogeneous Network Embedding (HNE) methods.**
+Source code and data to reproduce results.
 
-This repository contain one directory per methodology. Refer the *readme* in corresponding directory to reproduce the results.
+This repository contain one directory per methodology/analysis. Refer the *readme* in corresponding directory for more details.
 
 | Directory     | Content Description                                                                                |
 | ------------- | -------------------------------------------------------------------------------------------------- |
