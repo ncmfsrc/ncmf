@@ -10,7 +10,8 @@ cd ../NCMF
 conda env create -f environment.yml
 conda activate ncmf
 cd ../visualizations/
-wget <path to visualization_files.tar>
+Download the file from the path https://drive.google.com/file/d/1XZ8gxO3Ufgg12YI597DnhSFu8KshoAg5/view?usp=sharing and place in the current directory.
+bzip2 -d visualization_files.tar.bz2
 tar -xvf visualization_files.tar
 ```
 Execute the notebooks to obtain the visualizations.

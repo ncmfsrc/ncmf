@@ -4,7 +4,8 @@ This folder contains code sourced from https://github.com/theislab/dca, which is
 
 Execute the following steps to run DCA:
 ```
-wget <path to DCA_input_data.tar>
+Download the file from https://drive.google.com/file/d/1GMvhMl_z9rmy9hzjtTPPXp66AK6puW29/view?usp=sharing and place it in the current directory
+bzip2 -d DCA_input_data.tar.bz2
 tar -xvf DCA_input_data.tar
 conda env create -f environment.yml
 pip install dca

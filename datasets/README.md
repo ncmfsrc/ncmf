@@ -3,8 +3,9 @@ This folder must contain the datasets needed for NCMF, CMF, HNE baselines, DFMF 
 #### Instructions
 1. Execute the following commands to obtain the datasets for the algorithms in the current directory
 ```
-wget https://drive.google.com/file/d/1HId98AV5DIZ6yINWLwMslSOQE_JyRXrq/view?usp=sharing
-tar -xvzf NCMF_dataset_complete.tar.gz
+Download the file from https://drive.google.com/file/d/1QP0P1nRcQkgmdcCRUOMDGIBNIXyFkN0t/view?usp=sharing and place in the current directory
+bzip2 -d datasets_NCMF.tar.bz2
+tar -xvf datasets_NCMF.tar
 ```
 2. Ensure the data is available as shown below:
 ```

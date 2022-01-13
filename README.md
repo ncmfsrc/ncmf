@@ -12,4 +12,5 @@ This repository contain one directory per methodology. Refer the *readme* in cor
 | HNE           | Heterogeneous Network Representation Learning: metapath2vec, HIN2Vec, ConvE, TransE, R-GCN and HGT |
 | scikit-fusion | DFMF: Data Fusion by Matrix Factorization                                                          |
 | datasets      | The datasets used                                                                                  |
+| visualizations| Contains code for the visualizations in the paper                                                  |
 
